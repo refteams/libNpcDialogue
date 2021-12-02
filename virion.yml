@@ -1,0 +1,5 @@
+name: libNpcDialogue
+author: refTeam
+antigen: ref\libNpcDialogue
+version: 1.0.0
+api: 4.0.0
