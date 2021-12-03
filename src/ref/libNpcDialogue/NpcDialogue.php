@@ -11,6 +11,7 @@ use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\types\entity\ByteMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
+use pocketmine\network\mcpe\protocol\types\entity\IntMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
 use pocketmine\player\Player;
 use ref\libNpcDialogue\form\NpcDialogueButtonData;
@@ -26,9 +27,9 @@ final class NpcDialogue{
 	protected array $buttonData = [];
 
 	/**
-	 * This is the identifier for the dialogue
+	 * It is the identifier for the dialogue
 	 * Without this, we cannot handle the NpcRequestPacket properly
-	 * This is why we force the user to provide this
+	 * It is why we force the user to provide this
 	 */
 	protected string $sceneName = "";
 
@@ -62,7 +63,7 @@ final class NpcDialogue{
 				AddActorPacket::create(
 					$this->fakeActorId,
 					$this->fakeActorId,
-					EntityIds::AGENT,
+					EntityIds::NPC,
 					$player->getPosition()->add(0, 10, 0),
 					null,
 					$player->getLocation()->getPitch(),
@@ -72,8 +73,8 @@ final class NpcDialogue{
 					[
 						EntityMetadataProperties::HAS_NPC_COMPONENT => new ByteMetadataProperty(1),
 						EntityMetadataProperties::INTERACTIVE_TAG => new StringMetadataProperty($this->dialogueBody),
-						EntityMetadataProperties::NPC_ACTIONS => new StringMetadataProperty($mappedActions)
-						//EntityMetadataProperties::NPC_SKIN_INDEX => new StringMetadataProperty("") // TODO: Find out what is this
+						EntityMetadataProperties::NPC_ACTIONS => new StringMetadataProperty($mappedActions),
+						// EntityMetadataProperties::VARIANT => new IntMetadataProperty(0), // Variant affects NPC skin
 					],
 					[]
 				)

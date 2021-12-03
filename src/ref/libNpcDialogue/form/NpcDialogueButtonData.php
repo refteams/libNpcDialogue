@@ -6,18 +6,21 @@ namespace ref\libNpcDialogue\form;
 
 final class NpcDialogueButtonData implements \JsonSerializable{
 
-	public const TYPE_URL = 0;
+	public const TYPE_URL = 0; // works on only Minecraft Education Edition
 	public const TYPE_COMMAND = 1;
 	public const UNKNOWN = 2;
 
 	public const MODE_BUTTON = 0;
 	public const MODE_ON_CLOSE = 1;
+	public const MODE_ON_ENTER = 2;
+
+	public const CMD_VER = 17; // 17 in 1.18.0.2.0, and 12 in 1.16.0.2.0
 
 	protected string $name = "";
 
 	protected string $text = "";
 
-	protected $data = null;
+	protected ?array $data = []; // null when type is url
 
 	protected int $mode = self::MODE_BUTTON;
 
@@ -40,11 +43,17 @@ final class NpcDialogueButtonData implements \JsonSerializable{
 
 	public function setText(string $text) : self{
 		$this->text = $text;
+		$this->data = array_map(fn($str) => [
+			"cmd_line" => $str,
+			"cmd_ver" => self::CMD_VER
+		], explode("\n", $text));
 		return $this;
 	}
 
 	public function addLink(string $link) : self{
-		// TODO
+		$this->text = $link;
+		$this->type = self::TYPE_URL;
+		$this->data = null;
 		return $this;
 	}
 
@@ -78,7 +87,7 @@ final class NpcDialogueButtonData implements \JsonSerializable{
 		return [
 			"button_name" => $this->name,
 			"text" => $this->text,
-			"data" => $this->data, // TODO: WTF mojang
+			"data" => $this->data,
 			"mode" => $this->mode,
 			"type" => $this->type
 		];
