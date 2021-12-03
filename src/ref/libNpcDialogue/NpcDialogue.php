@@ -14,7 +14,9 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\IntMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
 use pocketmine\player\Player;
+use ref\libNpcDialogue\event\DialogueNameChangeEvent;
 use ref\libNpcDialogue\form\NpcDialogueButtonData;
+use function array_key_exists;
 use function array_map;
 use function json_encode;
 use function trim;
@@ -94,10 +96,28 @@ final class NpcDialogue{
 			$mappedActions
 		);
 		$player->getNetworkSession()->sendDataPacket($pk);
+
+		DialogueStore::$dialogueQueue[$player->getName()][$this->sceneName] = $this;
 	}
 
 	public function onButtonsChanged(array $buttons) : void{
 		// TODO
+	}
+
+	public function onButtonClicked(Player $player, int $buttonId) : void{
+		if(!array_key_exists($buttonId, $this->buttonData)){
+			throw new \InvalidArgumentException("Button ID $buttonId does not exist");
+		}
+		$this->buttonData[$buttonId]->getClickHandler()?->call($player);
+	}
+
+	public function onSetNameRequested(string $newName) : void{
+		$ev = new DialogueNameChangeEvent($this, $this->npcName, $newName);
+		$ev->call();
+		if($ev->isCancelled()){
+			return;
+		}
+		$this->npcName = $ev->getNewName();
 	}
 
 	public function addButton(NpcDialogueButtonData $buttonData) : void{

@@ -16,9 +16,10 @@ final class PacketHandler implements Listener{
 	public function onDataPacketReceive(DataPacketReceiveEvent $event) : void{
 		$packet = $event->getPacket();
 		if($packet instanceof NpcRequestPacket){
+			$event->cancel(); // prevent console from spamming
 			$requestType = $packet->requestType;
 			$player = $event->getOrigin()->getPlayer() ?: throw new AssumptionFailedError("This packet cannot be received when player is not connected");
-			$npcDialogue = DialogueStore::$dialogueQueue[$packet->sceneName][$player->getName()] ?? null;
+			$npcDialogue = DialogueStore::$dialogueQueue[$player->getName()][$packet->sceneName] ?? null;
 			if($npcDialogue === null){
 				return;
 			}
@@ -34,6 +35,15 @@ final class PacketHandler implements Listener{
 					$buttons[] = $button;
 				}
 				$npcDialogue->onButtonsChanged($buttons);
+			}elseif($requestType === NpcRequestPacket::REQUEST_EXECUTE_ACTION){
+				$buttonIndex = $packet->actionIndex;
+				$npcDialogue->onButtonClicked($player, $buttonIndex);
+			}elseif($requestType === NpcRequestPacket::REQUEST_SET_NAME){
+				/*
+				$newName = $packet->commandString;
+				$npcDialogue->onSetNameRequested($newName);
+				*/
+				// TODO: Need debug
 			}
 		}
 	}
