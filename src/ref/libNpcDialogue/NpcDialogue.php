@@ -111,7 +111,7 @@ final class NpcDialogue{
 		$mappedActions = json_encode(array_map(static fn(NpcDialogueButtonData $data) => $data->jsonSerialize(), $this->buttonData), JSON_THROW_ON_ERROR);
 		$player->getNetworkSession()->sendDataPacket(
 			NpcDialoguePacket::create(
-				$this->fakeActorId,
+				$this->actorId,
 				NpcDialoguePacket::ACTION_CLOSE,
 				$this->dialogueBody,
 				$this->sceneName,
@@ -150,7 +150,7 @@ final class NpcDialogue{
 	public function onDispose(Player $player) : void{
 		if($this->actorId !== null && $this->fakeActor){
 			$player->getNetworkSession()->sendDataPacket(RemoveActorPacket::create($this->actorId));
-			$this->fakeActorId = null;
+			$this->actorId = null;
 		}
 	}
 }
