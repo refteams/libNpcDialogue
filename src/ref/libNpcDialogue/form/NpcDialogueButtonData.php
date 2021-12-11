@@ -51,7 +51,7 @@ final class NpcDialogueButtonData implements \JsonSerializable{
 
 	public function setText(string $text) : self{
 		$this->text = $text;
-		$this->data = array_map(fn($str) => [
+		$this->data = array_map(static fn($str) => [
 			"cmd_line" => $str,
 			"cmd_ver" => self::CMD_VER
 		], explode("\n", $text));
