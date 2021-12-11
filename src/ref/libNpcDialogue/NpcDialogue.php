@@ -22,7 +22,9 @@ use function trim;
 
 final class NpcDialogue{
 
-	protected ?int $fakeActorId = null;
+	protected ?int $actorId = null;
+
+	protected bool $fakeActor = true;
 
 	/** @var NpcDialogueButtonData[] */
 	protected array $buttonData = [];
@@ -59,11 +61,11 @@ final class NpcDialogue{
 		}
 		$mappedActions = json_encode(array_map(static fn(NpcDialogueButtonData $data) => $data->jsonSerialize(), $this->buttonData), JSON_THROW_ON_ERROR);
 		if($entity === null){
-			$this->fakeActorId = Entity::nextRuntimeId();
+			$this->actorId = Entity::nextRuntimeId();
 			$player->getNetworkSession()->sendDataPacket(
 				AddActorPacket::create(
-					$this->fakeActorId,
-					$this->fakeActorId,
+					$this->actorId,
+					$this->actorId,
 					EntityIds::NPC,
 					$player->getPosition()->add(0, 10, 0),
 					null,
@@ -81,14 +83,15 @@ final class NpcDialogue{
 				)
 			);
 		}else{
-			$this->fakeActorId = $entity->getId();
+			$this->actorId = $entity->getId();
+			$this->fakeActor = false;
 			$propertyManager = $entity->getNetworkProperties();
 			$propertyManager->setByte(EntityMetadataProperties::HAS_NPC_COMPONENT, 1);
 			$propertyManager->setString(EntityMetadataProperties::INTERACTIVE_TAG, $this->dialogueBody);
 			$propertyManager->setString(EntityMetadataProperties::NPC_ACTIONS, $mappedActions);
 		}
 		$pk = NpcDialoguePacket::create(
-			$this->fakeActorId,
+			$this->actorId,
 			NpcDialoguePacket::ACTION_OPEN,
 			$this->dialogueBody,
 			$this->sceneName,
@@ -141,8 +144,8 @@ final class NpcDialogue{
 	}
 
 	public function onDispose(Player $player) : void{
-		if($this->fakeActorId !== null){
-			$player->getNetworkSession()->sendDataPacket(RemoveActorPacket::create($this->fakeActorId));
+		if($this->actorId !== null && $this->fakeActor){
+			$player->getNetworkSession()->sendDataPacket(RemoveActorPacket::create($this->actorId));
 			$this->fakeActorId = null;
 		}
 	}

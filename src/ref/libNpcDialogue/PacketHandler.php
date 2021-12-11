@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ref\libNpcDialogue;
 
 use pocketmine\event\Listener;
+use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\network\mcpe\protocol\NpcRequestPacket;
 use pocketmine\utils\AssumptionFailedError;
@@ -49,6 +50,16 @@ final class PacketHandler implements Listener{
 			}elseif($requestType === NpcRequestPacket::REQUEST_SET_SKIN){
 				// TODO
 			}
+		}
+	}
+
+	public function onPlayerQuit(PlayerQuitEvent $event) : void{
+		$player = $event->getPlayer();
+		if(isset(DialogueStore::$dialogueQueue[$player->getName()])){
+			foreach(DialogueStore::$dialogueQueue[$player->getName()] as $sceneName => $dialogue){
+				$dialogue->onDispose($player);
+			}
+			unset(DialogueStore::$dialogueQueue[$player->getName()]);
 		}
 	}
 }
