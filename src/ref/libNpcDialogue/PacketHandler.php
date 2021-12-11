@@ -44,6 +44,10 @@ final class PacketHandler implements Listener{
 				$npcDialogue->onSetNameRequested($newName);
 				*/
 				// TODO: Need debug
+			}elseif($requestType === NpcRequestPacket::REQUEST_SET_INTERACTION_TEXT){
+				// TODO
+			}elseif($requestType === NpcRequestPacket::REQUEST_SET_SKIN){
+				// TODO
 			}
 		}
 	}

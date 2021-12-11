@@ -11,7 +11,6 @@ use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\types\entity\ByteMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
-use pocketmine\network\mcpe\protocol\types\entity\IntMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
 use pocketmine\player\Player;
 use ref\libNpcDialogue\event\DialogueNameChangeEvent;
@@ -82,13 +81,14 @@ final class NpcDialogue{
 				)
 			);
 		}else{
+			$this->fakeActorId = $entity->getId();
 			$propertyManager = $entity->getNetworkProperties();
 			$propertyManager->setByte(EntityMetadataProperties::HAS_NPC_COMPONENT, 1);
 			$propertyManager->setString(EntityMetadataProperties::INTERACTIVE_TAG, $this->dialogueBody);
 			$propertyManager->setString(EntityMetadataProperties::NPC_ACTIONS, $mappedActions);
 		}
 		$pk = NpcDialoguePacket::create(
-			$entity?->getId() ?? $this->fakeActorId,
+			$this->fakeActorId,
 			NpcDialoguePacket::ACTION_OPEN,
 			$this->dialogueBody,
 			$this->sceneName,
@@ -108,7 +108,23 @@ final class NpcDialogue{
 		if(!array_key_exists($buttonId, $this->buttonData)){
 			throw new \InvalidArgumentException("Button ID $buttonId does not exist");
 		}
-		$this->buttonData[$buttonId]->getClickHandler()?->call($player);
+		$button = $this->buttonData[$buttonId];
+
+		if($button->getForceCloseOnClick()){
+			$mappedActions = json_encode(array_map(static fn(NpcDialogueButtonData $data) => $data->jsonSerialize(), $this->buttonData), JSON_THROW_ON_ERROR);
+			$player->getNetworkSession()->sendDataPacket(
+				NpcDialoguePacket::create(
+					$this->fakeActorId,
+					NpcDialoguePacket::ACTION_CLOSE,
+					$this->dialogueBody,
+					$this->sceneName,
+					$this->npcName,
+					$mappedActions
+				)
+			);
+		}
+
+		($this->buttonData[$buttonId]->getClickHandler())($player);
 	}
 
 	public function onSetNameRequested(string $newName) : void{
