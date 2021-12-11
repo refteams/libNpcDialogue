@@ -24,6 +24,9 @@ final class PacketHandler implements Listener{
 			if($npcDialogue === null){
 				return;
 			}
+			// REQUEST_SET_ACTIONS is received when the player modified the content of button
+			// but we need more debugging to know the all types of actions
+			// for now, we just handle the button changed
 			if($requestType === NpcRequestPacket::REQUEST_SET_ACTIONS){
 				$actionData = json_decode($packet->commandString, true, 512, JSON_THROW_ON_ERROR);
 				$buttons = [];
@@ -37,18 +40,24 @@ final class PacketHandler implements Listener{
 				}
 				$npcDialogue->onButtonsChanged($buttons);
 			}elseif($requestType === NpcRequestPacket::REQUEST_EXECUTE_ACTION){
+				// REQUEST_EXECUTE_ACTION is received when player clicked the button
 				$buttonIndex = $packet->actionIndex;
 				$npcDialogue->onButtonClicked($player, $buttonIndex);
 			}elseif($requestType === NpcRequestPacket::REQUEST_SET_NAME){
+				// REQUEST_SET_NAME is received when player tried to change the dialogue's name
 				/*
 				$newName = $packet->commandString;
 				$npcDialogue->onSetNameRequested($newName);
 				*/
 				// TODO: Need debug
 			}elseif($requestType === NpcRequestPacket::REQUEST_SET_INTERACTION_TEXT){
+				// REQUEST_SET_INTERACTION_TEXT is received when player tried to modify the dialogue body
 				// TODO
 			}elseif($requestType === NpcRequestPacket::REQUEST_SET_SKIN){
-				// TODO
+				// REQUEST_SET_SKIN is received when player tried to change the skin of NPC
+				// Currently we don't know what integer should be sent to change the NPC skin
+				// TODO: we need to find out the types of skin
+				/** @link NpcDialogue::sendTo() */
 			}
 		}
 	}

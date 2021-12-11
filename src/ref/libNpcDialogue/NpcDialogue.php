@@ -30,14 +30,19 @@ final class NpcDialogue{
 	protected array $buttonData = [];
 
 	/**
-	 * It is the identifier for the dialogue
-	 * Without this, we cannot handle the NpcRequestPacket properly
-	 * It is why we force the user to provide this
+	 * sceneName is used for identifying the dialogue.
+	 * Without this, We cannot handle NpcRequestPacket properly.
 	 */
 	protected string $sceneName = "";
 
+	/**
+	 * npcName is used for a title of dialogue
+	 */
 	protected string $npcName = "";
 
+	/**
+	 * dialogueBody is used for body of dialogue
+	 */
 	protected string $dialogueBody = "";
 
 	public function setSceneName(string $sceneName) : void{
