@@ -57,7 +57,7 @@ final class PacketHandler implements Listener{
 		$player = $event->getPlayer();
 		if(isset(DialogueStore::$dialogueQueue[$player->getName()])){
 			foreach(DialogueStore::$dialogueQueue[$player->getName()] as $sceneName => $dialogue){
-				$dialogue->onDispose($player);
+				$dialogue->onClose($player);
 			}
 			unset(DialogueStore::$dialogueQueue[$player->getName()]);
 		}

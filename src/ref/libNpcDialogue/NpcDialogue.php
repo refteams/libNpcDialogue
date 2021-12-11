@@ -107,6 +107,20 @@ final class NpcDialogue{
 		// TODO
 	}
 
+	public function onClose(Player $player) : void{
+		$mappedActions = json_encode(array_map(static fn(NpcDialogueButtonData $data) => $data->jsonSerialize(), $this->buttonData), JSON_THROW_ON_ERROR);
+		$player->getNetworkSession()->sendDataPacket(
+			NpcDialoguePacket::create(
+				$this->fakeActorId,
+				NpcDialoguePacket::ACTION_CLOSE,
+				$this->dialogueBody,
+				$this->sceneName,
+				$this->npcName,
+				$mappedActions
+			)
+		);
+	}
+
 	public function onButtonClicked(Player $player, int $buttonId) : void{
 		if(!array_key_exists($buttonId, $this->buttonData)){
 			throw new \InvalidArgumentException("Button ID $buttonId does not exist");
@@ -114,17 +128,7 @@ final class NpcDialogue{
 		$button = $this->buttonData[$buttonId];
 
 		if($button->getForceCloseOnClick()){
-			$mappedActions = json_encode(array_map(static fn(NpcDialogueButtonData $data) => $data->jsonSerialize(), $this->buttonData), JSON_THROW_ON_ERROR);
-			$player->getNetworkSession()->sendDataPacket(
-				NpcDialoguePacket::create(
-					$this->fakeActorId,
-					NpcDialoguePacket::ACTION_CLOSE,
-					$this->dialogueBody,
-					$this->sceneName,
-					$this->npcName,
-					$mappedActions
-				)
-			);
+			$this->onClose($player);
 		}
 
 		($this->buttonData[$buttonId]->getClickHandler())($player);
