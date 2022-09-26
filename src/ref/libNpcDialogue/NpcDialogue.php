@@ -77,7 +77,7 @@ final class NpcDialogue{
 					$player->getLocation()->getPitch(),
 					$player->getLocation()->getYaw(),
 					$player->getLocation()->getYaw(),
-					[]
+					$player->getLocation()->getYaw(),
 					[],
 					[
 						EntityMetadataProperties::HAS_NPC_COMPONENT => new ByteMetadataProperty(1),
