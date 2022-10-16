@@ -98,7 +98,7 @@ final class NpcDialogueButtonData implements \JsonSerializable{
 	}
 
 	/**
-	 * @phpstan-param \Closure(Player $player) : void
+	 * @phpstan-param \Closure(Player $player) : void $clickHandler
 	 */
 	public function setClickHandler(\Closure $clickHandler) : self{
 		Utils::validateCallableSignature(static function(Player $player) : void{}, $clickHandler);
