@@ -180,4 +180,8 @@ final class NpcDialogue{
 			$this->actorId = null;
 		}
 	}
+
+	public function setPickerOffset(int $offset) : void{
+		$this->pickerOffset = $offset;
+	}
 }
