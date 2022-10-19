@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ref\libNpcDialogue;
 
 use pocketmine\entity\Entity;
+use pocketmine\entity\Human;
 use pocketmine\network\mcpe\protocol\AddActorPacket;
 use pocketmine\network\mcpe\protocol\NpcDialoguePacket;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
@@ -45,6 +46,13 @@ final class NpcDialogue{
 	 */
 	protected string $dialogueBody = "";
 
+	/**
+	 * pickerOffset is used to set the offset of dialogue picker
+	 * This only need when you want to spawn Human NPC. (the NPC goes off when you open dialogue)
+	 * @author Tobias Grether ({@link https://github.com/TobiasGrether})
+	 */
+	private int $pickerOffset = -50;
+
 	public function setSceneName(string $sceneName) : void{
 		if(trim($sceneName) === ""){
 			throw new \InvalidArgumentException("Scene name cannot be empty");
@@ -65,6 +73,16 @@ final class NpcDialogue{
 			throw new \InvalidArgumentException("Scene name cannot be empty");
 		}
 		$mappedActions = json_encode(array_map(static fn(NpcDialogueButtonData $data) => $data->jsonSerialize(), $this->buttonData), JSON_THROW_ON_ERROR);
+		$skinIndex = [
+			"picker_offsets" => [
+				"scale" => [0, 0, 0],
+				"translate" => [0, 0, 0],
+			],
+			"portrait_offsets" => [
+				"scale" => [1, 1, 1],
+				"translate" => [0, $this->pickerOffset, 0]
+			]
+		];
 		if($entity === null){
 			$this->actorId = Entity::nextRuntimeId();
 			$player->getNetworkSession()->sendDataPacket(
@@ -94,6 +112,10 @@ final class NpcDialogue{
 			$propertyManager->setByte(EntityMetadataProperties::HAS_NPC_COMPONENT, 1);
 			$propertyManager->setString(EntityMetadataProperties::INTERACTIVE_TAG, $this->dialogueBody);
 			$propertyManager->setString(EntityMetadataProperties::NPC_ACTIONS, $mappedActions);
+			if($entity instanceof Human){
+				// This is a workaround for Human NPC
+				$propertyManager->setString(EntityMetadataProperties::NPC_SKIN_INDEX, json_encode($skinIndex));
+			}
 		}
 		$pk = NpcDialoguePacket::create(
 			$this->actorId,
