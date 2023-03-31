@@ -85,6 +85,9 @@ final class NpcDialogueButtonData implements \JsonSerializable{
 	/**
 	 * Forces client to close the form after clicking button
 	 *
+	 * Warning: Closing dialogue does NOT immediately close the dialogue, which means if you send a new form immediately whenever dialogue got closed it won't be sent
+	 * because client is "busy"; You'll need to do some trick with NetworkStackLatencyPacket.
+	 *
 	 * @param bool $forceCloseOnClick
 	 *
 	 * @return $this
