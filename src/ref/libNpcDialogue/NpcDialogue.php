@@ -12,6 +12,7 @@ use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\types\entity\ByteMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
+use pocketmine\network\mcpe\protocol\types\entity\PropertySyncData;
 use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
 use pocketmine\player\Player;
 use ref\libNpcDialogue\event\DialogueNameChangeEvent;
@@ -95,13 +96,15 @@ final class NpcDialogue{
 					$player->getLocation()->getPitch(),
 					$player->getLocation()->getYaw(),
 					$player->getLocation()->getYaw(),
-					[],
+					$player->getLocation()->getYaw(),
 					[
 						EntityMetadataProperties::HAS_NPC_COMPONENT => new ByteMetadataProperty(1),
 						EntityMetadataProperties::INTERACTIVE_TAG => new StringMetadataProperty($this->dialogueBody),
 						EntityMetadataProperties::NPC_ACTIONS => new StringMetadataProperty($mappedActions),
 						// EntityMetadataProperties::VARIANT => new IntMetadataProperty(0), // Variant affects NPC skin
 					],
+					[],
+					new PropertySyncData([], []),
 					[]
 				)
 			);
