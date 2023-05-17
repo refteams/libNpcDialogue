@@ -97,13 +97,13 @@ final class NpcDialogue{
 					$player->getLocation()->getYaw(),
 					$player->getLocation()->getYaw(),
 					$player->getLocation()->getYaw(),
+					[],
 					[
 						EntityMetadataProperties::HAS_NPC_COMPONENT => new ByteMetadataProperty(1),
 						EntityMetadataProperties::INTERACTIVE_TAG => new StringMetadataProperty($this->dialogueBody),
 						EntityMetadataProperties::NPC_ACTIONS => new StringMetadataProperty($mappedActions),
 						// EntityMetadataProperties::VARIANT => new IntMetadataProperty(0), // Variant affects NPC skin
 					],
-					[],
 					new PropertySyncData([], []),
 					[]
 				)
