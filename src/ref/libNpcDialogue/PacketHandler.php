@@ -28,7 +28,7 @@ final class PacketHandler implements Listener{
 			// but we need more debugging to know the all types of actions
 			// for now, we just handle the button changed
 			if($requestType === NpcRequestPacket::REQUEST_SET_ACTIONS){
-				$actionData = json_decode($packet->commandString, true, 512, JSON_THROW_ON_ERROR);
+				$actionData = json_decode($packet->commandString, true, 512);
 				$buttons = [];
 				foreach($actionData as $key => $actionDatum){
 					$button = NpcDialogueButtonData::create()

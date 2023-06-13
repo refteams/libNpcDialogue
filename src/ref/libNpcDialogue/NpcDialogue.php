@@ -73,7 +73,7 @@ final class NpcDialogue{
 		if(trim($this->sceneName) === ""){
 			throw new \InvalidArgumentException("Scene name cannot be empty");
 		}
-		$mappedActions = json_encode(array_map(static fn(NpcDialogueButtonData $data) => $data->jsonSerialize(), $this->buttonData), JSON_THROW_ON_ERROR);
+		$mappedActions = json_encode(array_map(static fn(NpcDialogueButtonData $data) => $data->jsonSerialize(), $this->buttonData));
 		$skinIndex = [
 			"picker_offsets" => [
 				"scale" => [0, 0, 0],
@@ -138,7 +138,7 @@ final class NpcDialogue{
 	}
 
 	public function onClose(Player $player) : void{
-		$mappedActions = json_encode(array_map(static fn(NpcDialogueButtonData $data) => $data->jsonSerialize(), $this->buttonData), JSON_THROW_ON_ERROR);
+		$mappedActions = json_encode(array_map(static fn(NpcDialogueButtonData $data) => $data->jsonSerialize(), $this->buttonData));
 		$player->getNetworkSession()->sendDataPacket(
 			NpcDialoguePacket::create(
 				$this->actorId,
