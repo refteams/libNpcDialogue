@@ -1,5 +1,7 @@
 {
 	"name": "alvin0319/libnpcdialogue",
+	"description": "A PocketMine-MP virion to implement functional NPC dialogue.",
+	"license": "MIT",
 	"authors": [
 		{
 			"name": "alvin0319",
@@ -17,7 +19,9 @@
 		"lint": "@php vendor/bin/phpstan analyse --memory-limit=2G --no-progress src"
 	},
 	"autoload": {
-		"ref\\libNpcDialogue": "src/"
+		"psr-0": {
+			"ref\\libNpcDialogue": "src/"
+		}
 	},
 	"extra": {
 		"virion": {
