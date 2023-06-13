@@ -10,7 +10,11 @@
 		}
 	],
 	"require-dev": {
-		"pocketmine/pocketmine-mp": "^5.0.0"
+		"pocketmine/pocketmine-mp": "^5.0.0",
+		"phpstan/phpstan": "^1.10"
+	},
+	"scripts": {
+		"lint": "@php vendor/bin/phpstan analyse --memory-limit=2G --no-progress src"
 	},
 	"autoload": {
 		"ref\\libNpcDialogue": "src/"

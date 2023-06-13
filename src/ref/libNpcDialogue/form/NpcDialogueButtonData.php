@@ -26,6 +26,7 @@ final class NpcDialogueButtonData implements \JsonSerializable{
 
 	protected string $text = "";
 
+	/** @phpstan-var list<mixed>|null */
 	protected ?array $data = []; // null when type is url
 
 	protected int $mode = self::MODE_BUTTON;
@@ -121,6 +122,7 @@ final class NpcDialogueButtonData implements \JsonSerializable{
 		return $this->forceCloseOnClick;
 	}
 
+	/** @return array<string, mixed> */
 	public function jsonSerialize() : array{
 		return [
 			"button_name" => $this->name,

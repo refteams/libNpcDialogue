@@ -10,6 +10,7 @@ use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\network\mcpe\protocol\NpcRequestPacket;
 use pocketmine\utils\AssumptionFailedError;
 use ref\libNpcDialogue\form\NpcDialogueButtonData;
+use function is_array;
 use function json_decode;
 
 final class PacketHandler implements Listener{
@@ -29,13 +30,19 @@ final class PacketHandler implements Listener{
 			// for now, we just handle the button changed
 			if($requestType === NpcRequestPacket::REQUEST_SET_ACTIONS){
 				$actionData = json_decode($packet->commandString, true, 512);
+				if(!is_array($actionData)){
+					throw new AssumptionFailedError("Decoded json should be array");
+				}
 				$buttons = [];
 				foreach($actionData as $key => $actionDatum){
+					if(!is_array($actionDatum)){
+						throw new AssumptionFailedError("Action data should be array");
+					}
 					$button = NpcDialogueButtonData::create()
-						->setName($actionDatum["button_name"])
-						->setText($actionDatum["text"])
-						->setMode($actionDatum["mode"])
-						->setType($actionDatum["type"]);
+						->setName((string) $actionDatum["button_name"])
+						->setText((string) $actionDatum["text"])
+						->setMode((int) $actionDatum["mode"])
+						->setType((int) $actionDatum["type"]);
 					$buttons[] = $button;
 				}
 				$npcDialogue->onButtonsChanged($buttons);

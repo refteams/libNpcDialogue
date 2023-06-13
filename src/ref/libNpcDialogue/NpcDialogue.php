@@ -15,6 +15,8 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\PropertySyncData;
 use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
 use pocketmine\player\Player;
+use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Utils;
 use ref\libNpcDialogue\event\DialogueNameChangeEvent;
 use ref\libNpcDialogue\form\NpcDialogueButtonData;
 use function array_key_exists;
@@ -73,7 +75,7 @@ final class NpcDialogue{
 		if(trim($this->sceneName) === ""){
 			throw new \InvalidArgumentException("Scene name cannot be empty");
 		}
-		$mappedActions = json_encode(array_map(static fn(NpcDialogueButtonData $data) => $data->jsonSerialize(), $this->buttonData));
+		$mappedActions = Utils::assumeNotFalse(json_encode(array_map(static fn(NpcDialogueButtonData $data) => $data->jsonSerialize(), $this->buttonData)));
 		$skinIndex = [
 			"picker_offsets" => [
 				"scale" => [0, 0, 0],
@@ -117,7 +119,7 @@ final class NpcDialogue{
 			$propertyManager->setString(EntityMetadataProperties::NPC_ACTIONS, $mappedActions);
 			if($entity instanceof Human){
 				// This is a workaround for Human NPC
-				$propertyManager->setString(EntityMetadataProperties::NPC_SKIN_INDEX, json_encode($skinIndex));
+				$propertyManager->setString(EntityMetadataProperties::NPC_SKIN_INDEX, Utils::assumeNotFalse(json_encode($skinIndex)));
 			}
 		}
 		$pk = NpcDialoguePacket::create(
@@ -133,15 +135,16 @@ final class NpcDialogue{
 		DialogueStore::$dialogueQueue[$player->getName()][$this->sceneName] = $this;
 	}
 
+	/** @phpstan-param list<NpcDialogueButtonData> $buttons */
 	public function onButtonsChanged(array $buttons) : void{
 		// TODO
 	}
 
 	public function onClose(Player $player) : void{
-		$mappedActions = json_encode(array_map(static fn(NpcDialogueButtonData $data) => $data->jsonSerialize(), $this->buttonData));
+		$mappedActions = Utils::assumeNotFalse(json_encode(array_map(static fn(NpcDialogueButtonData $data) => $data->jsonSerialize(), $this->buttonData)));
 		$player->getNetworkSession()->sendDataPacket(
 			NpcDialoguePacket::create(
-				$this->actorId,
+				$this->actorId ?? throw new AssumptionFailedError("This method should not be called when actorId is null"),
 				NpcDialoguePacket::ACTION_CLOSE,
 				$this->dialogueBody,
 				$this->sceneName,
@@ -161,7 +164,10 @@ final class NpcDialogue{
 			$this->onClose($player);
 		}
 
-		($this->buttonData[$buttonId]->getClickHandler())($player);
+		$handler = $button->getClickHandler();
+		if($handler !== null){
+			$handler($player);
+		}
 	}
 
 	public function onSetNameRequested(string $newName) : void{
