@@ -1,0 +1,24 @@
+{
+	"name": "alvin0319/libnpcdialogue",
+	"authors": [
+		{
+			"name": "alvin0319",
+			"email": "me@minjae.dev"
+		},
+		{
+			"name": "nnnlog"
+		}
+	],
+	"require-dev": {
+		"pocketmine/pocketmine-mp": "^5.0.0"
+	},
+	"autoload": {
+		"ref\\libNpcDialogue": "src/"
+	},
+	"extra": {
+		"virion": {
+			"spec": "3.0",
+			"namespace-root": "ref\\libNpcDialogue"
+		}
+	}
+}
